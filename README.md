@@ -1,5 +1,5 @@
 # PeepzApi
-A little study using Spring Data REST and React+Redux+ReduxObservable+RxJS
+A little study using Spring Data REST and React+Redux+Redux Observable+RxJS
 
 # About the App
 As a quick study, the functionality is pretty rudamentary. It just lists "Users" and displays them on a page. You can add, update or delete users. Data is updated automatically by dispatching actions to a Redux store where changes are then pushed back down to React components using Redux Connect.
