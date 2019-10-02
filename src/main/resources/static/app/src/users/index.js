@@ -1,3 +1,5 @@
+import {createReducer} from '../core';
+import handlers, {UserAction} from './handlers'
 import {ofType, combineEpics} from 'redux-observable';
 import {mergeMap, map, catchError} from 'rxjs/operators';
 import {of} from 'rxjs';
@@ -6,135 +8,16 @@ import {toastr} from 'react-redux-toastr';
 import client from '../client';
 
 import {
-  getLink,
-  resourceMatches,
-  linkMatches
+  getLink
 } from '../model'
 
-// Actions to be handled by the epics
-export const
-  USER_CREATE = 'user/create',
-  USER_UPDATE = 'user/update',
-  USER_DELETE = 'user/delete';
-
-// Responding to side effects in the reducer
-export const
-  USER_CREATED = 'user/created',
-  USER_UPDATED = 'user/updated',
-  USER_DELETED = 'user/deleted';
-
-export const
-  USER_CREATING = 'user/creating',
-  USER_EDITING = 'user/editing',
-  USER_LOADED = 'user/loaded',
-  USERS_LOADED = 'user/usersLoaded';
-
-export const NOOP = 'users/NOOP';
-
 const NOOP_ACTION = {
-  type: NOOP
+  type: UserAction.NOOP
 };
 
 export const QUERY_FOR_USERS = 'user/query';
 
-// Default reducer
-export default (state = {list: [], current: {}, editing: false}, action = {}) => {
-  switch (action.type) {
-    case USER_CREATED:
-      let newState = {
-        ...state,
-        current: action.payload.user
-      };
-      let allUsers = [...state.list];
-      allUsers.push(action.payload.user);
-      allUsers.sort((a, b) => {
-        if (a && b && a.username && b.username) {
-          let lowerA = a.username.toLowerCase();
-          let lowerB = b.username.toLowerCase();
-          return (lowerA < lowerB) ? -1 : (lowerA > lowerB) ? 1 : 0;
-        }
-        return 0;
-      });
-
-      // In a more robust implementation we would refresh the list from the server.
-      newState.list = allUsers;
-      newState.editing = false;
-      return newState;
-    case USER_UPDATED:
-      allUsers = [...state.list];
-      let updatedUser = action.payload.user;
-
-      allUsers.forEach((user, ix) => {
-        if (resourceMatches(user, updatedUser)) {
-          allUsers[ix] = updatedUser;
-        }
-      });
-
-      newState = {
-        ...state,
-        list: allUsers
-      };
-      newState.editing = false;
-      return newState;
-    case USER_DELETED:
-      let link = action.payload.link;
-      allUsers = state.list.filter(user => !linkMatches(getLink('self', user.links), link));
-
-      newState = {
-        ...state,
-        list: allUsers
-      };
-
-      if (newState.current) {
-        if (linkMatches(getLink('self', newState.current.links), link)) {
-          newState.current = {};
-        }
-      }
-      newState.editing = false;
-      return newState;
-    case USER_LOADED:
-      newState = {
-        ...state,
-        current: {
-          ...action.payload.user
-        }
-      };
-      return newState;
-    case USERS_LOADED:
-      newState = {
-        ...state,
-        list: [
-          ...action.payload.content
-        ],
-        page: {
-          ...action.payload.page
-        },
-        links: [
-          ...action.payload.links
-        ]
-      };
-      return newState;
-    case USER_EDITING:
-      newState = {
-        ...state,
-        editing: action.payload.editing
-      };
-      if (action.payload.user && action.payload.editing) {
-        newState.current = action.payload.user
-      }
-
-      return newState;
-    case USER_CREATING:
-      newState = {
-        ...state,
-        current: {},
-        editing: true
-      };
-      return newState;
-    default:
-      return state;
-  }
-};
+export default createReducer({list: [], current: {}, editing: false}, handlers);
 
 /**
  * Receives a query object from a dispatch.
@@ -146,7 +29,7 @@ export default (state = {list: [], current: {}, editing: false}, action = {}) =>
  */
 export const queryForUsersAction = (queryForUsersRequest) => {
   return {
-    type: QUERY_FOR_USERS,
+    type: UserAction.QUERY_FOR_USERS,
     payload: {
       query: {
         ...queryForUsersRequest
@@ -164,7 +47,7 @@ export const queryForUsersAction = (queryForUsersRequest) => {
  */
 export const usersLoaded = (payload) => {
   return {
-    type: USERS_LOADED,
+    type: UserAction.USERS_LOADED,
     payload
   };
 };
@@ -176,7 +59,7 @@ export const usersLoaded = (payload) => {
  */
 export const userLoaded = (payload) => {
   return {
-    type: USER_LOADED,
+    type: UserAction.USER_LOADED,
     payload: {
       user: payload
     }
@@ -185,23 +68,23 @@ export const userLoaded = (payload) => {
 
 export const userEditing = (user, editing) => {
   return {
-    type: USER_EDITING,
+    type: UserAction.USER_EDITING,
     payload: {
       user,
       editing
     }
   };
-}
+};
 
 export const userCreating = () => {
   return {
-    type: USER_CREATING
+    type: UserAction.USER_CREATING
   };
-}
+};
 
 // CRUD Action creators
 export const createUserAction = (payload) => ({
-  type: USER_CREATE,
+  type: UserAction.USER_CREATE,
   payload: {
     ...payload
   }
@@ -209,7 +92,7 @@ export const createUserAction = (payload) => ({
 
 export const userCreatedAction = (createdUser) => {
   return {
-    type: USER_CREATED,
+    type: UserAction.USER_CREATED,
     payload: {
       // I learned the hard way that if you don't put the actual subject of the payload
       // in a property then if the payload itself has a "id" property, Redux will overwrite the "id" property
@@ -220,24 +103,24 @@ export const userCreatedAction = (createdUser) => {
 };
 
 export const updateUserAction = (payload) => ({
-  type: USER_UPDATE,
+  type: UserAction.USER_UPDATE,
   payload: {...payload}
 });
 
 export const userUpdatedAction = (updatedUser) => ({
-  type: USER_UPDATED,
+  type: UserAction.USER_UPDATED,
   payload: {
     user: updatedUser
   }
 });
 
 export const deleteUserAction = (payload) => ({
-  type: USER_DELETE,
+  type: UserAction.USER_DELETE,
   payload: {...payload}
 });
 
 export const userDeletedAction = (link) => ({
-  type: USER_DELETED,
+  type: UserAction.USER_DELETED,
   payload: {
     link
   }
@@ -274,7 +157,7 @@ const toastSaveResourceError = (response, resource) => {
 
 // Epics
 export const queryForUsersEpic = (action$) => action$.pipe(
-  ofType(QUERY_FOR_USERS),
+  ofType(UserAction.QUERY_FOR_USERS),
   mergeMap(action => {
     let path = 'users';
     let payload = {...action.payload};
@@ -293,7 +176,7 @@ export const queryForUsersEpic = (action$) => action$.pipe(
 );
 
 export const createUserEpic = (action$) => action$.pipe(
-  ofType(USER_CREATE),
+  ofType(UserAction.USER_CREATE),
   mergeMap(action => {
     return client.post('users', action.payload).pipe(
       mergeMap(({data}) => of(userCreatedAction(data), toastSaveResource(data))),
@@ -305,7 +188,7 @@ export const createUserEpic = (action$) => action$.pipe(
 );
 
 export const updateUserEpic = (action$) => action$.pipe(
-  ofType(USER_UPDATE),
+  ofType(UserAction.USER_UPDATE),
   mergeMap(action => {
     let link = getLink('self', action.payload.links);
     return client.put(link.href, action.payload).pipe(
@@ -318,7 +201,7 @@ export const updateUserEpic = (action$) => action$.pipe(
 );
 
 export const deleteUserEpic = (action$) => action$.pipe(
-  ofType(USER_DELETE),
+  ofType(UserAction.USER_DELETE),
   mergeMap(action => {
     let link = getLink('self', action.payload.links);
     return client.delete(link.href).pipe(

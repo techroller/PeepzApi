@@ -24,7 +24,7 @@ export const linkMatches = (a, b) => {
 export const getLinkHref = (rel, links) => {
   let link = getLink(rel, links);
   return link ? link.href : null;
-}
+};
 
 export class Resource {
 
@@ -34,14 +34,14 @@ export class Resource {
       this.id = this.extractId(this.self.href);
     }
     extend(this, resource);
-  }
+  };
 
   extractRel = (rel, resource) => {
     if (resource && resource.links) {
       return find(resource.links, (link) => link.rel === rel);
     }
     return null;
-  }
+  };
 
   // very opinionated but...
   extractId = (link) => link.substring(link.lastIndexOf('/') + 1, link.length);

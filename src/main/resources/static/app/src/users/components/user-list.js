@@ -32,25 +32,25 @@ class UserList extends Component {
 
   handleNext = () => {
     this.props.onNext(this.props.users.page, this.state.sort);
-  }
+  };
 
   handlePrev = () => {
     this.props.onPrev(this.props.users.page, this.state.sort);
-  }
+  };
 
   handleGoTo = (ix) => {
     this.props.onGoTo(ix, this.props.users.page, this.state.sort);
-  }
+  };
 
   handleSort = (prop, dir) => {
     let sort = `${prop},${dir}`;
     this.setState({sort});
     this.props.onSort(sort);
-  }
+  };
 
   componentDidMount = () => {
     this.props.onLoad();
-  }
+  };
 
   render() {
     let items = this.props.users.list.map((user) => <UserItem user={user} key={getLinkHref('self', user.links)}
