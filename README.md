@@ -56,4 +56,12 @@ gradle build
 gradle bootRun
 ```
 
+### Run with Docker
+If you have Docker installed, you can run the app using `docker-compose`.
+Simply issue the following command:
+
+```
+docker-compose up
+```
+
 Navigate to http://localhost:8080 and enjoy!
