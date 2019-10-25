@@ -15,8 +15,6 @@ const NOOP_ACTION = {
   type: UserAction.NOOP
 };
 
-export const QUERY_FOR_USERS = 'user/query';
-
 export default createReducer({list: [], current: {}, editing: false}, handlers);
 
 /**
@@ -133,7 +131,7 @@ const toastSaveResource = (resource, theWord = 'saved') => {
 
 const toastRequestError = (response) => {
   if (response.status === 404) {
-    toastr.warn('Resource was not found')
+    toastr.warning('Resource was not found')
   } else if (response.status === 400) {
     if (response.data && response.data.message) {
       toastr.error('Bad request', response.data.message);
@@ -141,7 +139,7 @@ const toastRequestError = (response) => {
       toastr.error('Bad request')
     }
   } else if (response.status === 401 || response.status === 403) {
-    toastr.warn('Unauthorized access', 'You are not authorized to access this resource');
+    toastr.warning('Unauthorized access', 'You are not authorized to access this resource');
   }
   return NOOP_ACTION;
 };

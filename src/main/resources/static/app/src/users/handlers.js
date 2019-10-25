@@ -1,4 +1,5 @@
-import {resourceMatches} from "../model";
+import {resourceMatches, extractId, getLink, linkMatches} from "../model";
+import filter from 'lodash/filter';
 
 export const UserAction = {
     USER_CREATE: 'USER_CREATE',
@@ -15,7 +16,7 @@ export const UserAction = {
     NOOP: 'NOOP'
 };
 
-// Reducer functions
+// Reducer functions for "users"
 const userCreated = (state, action) => {
     let newState = {
         ...state,
@@ -103,12 +104,30 @@ const userCreating = (state, action) => {
     return newState;
 };
 
+const userDeleted = (state, action) => {
+    let link = action.payload.link;
+    let filteredUsers = filter(state.list, user => {
+        let userLink = getLink('self', user.links);
+        return !linkMatches(link, userLink);
+    });
+
+    let newState = {
+        ...state,
+        list: filteredUsers,
+        current: {},
+        editing: false
+    };
+
+    return newState;
+};
+
 export default {
     [UserAction.USER_CREATED]: userCreated,
     [UserAction.USER_CREATING]: userCreating,
     [UserAction.USER_UPDATED]: userUpdated,
     [UserAction.USER_LOADED]: userLoaded,
     [UserAction.USERS_LOADED]: usersLoaded,
-    [UserAction.USER_EDITING]: userEditing
+    [UserAction.USER_EDITING]: userEditing,
+    [UserAction.USER_DELETED]: userDeleted
 };
 

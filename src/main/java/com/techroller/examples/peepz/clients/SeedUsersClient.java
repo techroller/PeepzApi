@@ -31,7 +31,7 @@ public class SeedUsersClient {
     // Arbitrary number of users to seed
     private static final String SEED_USERS_COUNT = "250";
     private static final ObjectMapper SIMPLE_MAPPER = new ObjectMapper();
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
 
     private final RestTemplate restTemplate;
 
