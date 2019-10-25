@@ -52,8 +52,8 @@ npm run build
 ## Run it
 Now start the java app by going back to the root directory and running gradlew. As a Java app running on localhost
 ```
-gradlew build
-gradlw bootRun
+gradle build
+gradle bootRun
 ```
 
 Navigate to http://localhost:8080 and enjoy!
