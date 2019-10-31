@@ -1,12 +1,12 @@
 import Qs from 'qs';
-import {from} from 'rxjs';
+import { from } from 'rxjs';
 import Axios from 'axios';
 
 const BASE_URI = 'http://localhost:8080/api';
 
 const qs = (params = {}) => {
   if (Object.keys(params).length > 0) {
-    return '?' + Qs.stringify(params, {arrayFormat: 'brackets'});
+    return '?' + Qs.stringify(params, { arrayFormat: 'brackets' });
   }
   return '';
 };
