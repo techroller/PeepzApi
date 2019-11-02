@@ -10,7 +10,7 @@ import {Button} from 'reactstrap';
 import moment from 'moment';
 import isNil from 'lodash/isNil'
 
-const UserItem = ({user}) => {
+export const UserItem = ({user}) => {
   const dispatch = useDispatch();
 
   if (isNil(user.dateOfBirth)) {
@@ -18,14 +18,14 @@ const UserItem = ({user}) => {
   }
 
   const onEditUser = (payload) => {
-    dispatch(userEditing(payload));
+    dispatch(userEditing(payload, true));
   };
 
   const onUserSelected = (payload) => {
     dispatch(userLoaded(payload));
   };
 
-  const onDeleteUser = () => {
+  const onDeleteUser = (payload) => {
     dispatch(deleteUserAction(payload));
   };
 
@@ -52,5 +52,3 @@ const UserItem = ({user}) => {
     </div>
   );
 };
-
-export default UserItem;

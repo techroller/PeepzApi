@@ -1,115 +1,76 @@
-import React, { Component } from 'react';
-import { connect, useSelector, useDispatch } from 'react-redux';
-import UserItem from './user-item';
-import UserEditModalContainer from './user-edit-modal';
-import {
-  queryForUsersAction,
-  userCreating
-} from '../index';
+import React, { useState, useEffect, Component } from 'react';
+import { UserItem } from './user-item';
+
 import {
   getLinkHref,
 } from '../../model';
 import Paginate from '../../ui/paginate';
 import { Button } from 'reactstrap';
 
-class UserList extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      search: '',
-      sort: 'username,asc',
-      size: 20,
-      openEditModal: false,
-    };
-  }
+export const UserList = (props) => {
+  const {
+    users,
+    onLoad,
+    onSort,
+    onPageResize,
+    onNext,
+    onPrev,
+    onGoTo,
+    onUserCreate,
+  } = props;
 
-  handlePageSizeChange = (size) => {
-    this.props.onPageResize(size, this.state.sort);
+  const [state, setState] = useState({
+    search: '',
+    sort: 'username,asc',
+    size: 20,
+    openEditModal: false,
+  });
+
+  useEffect(onLoad);
+
+  const handlePageSizeChange = (size) => {
+    onPageResize(size, state.sort);
   };
 
-  handleNext = () => {
-    this.props.onNext(this.props.users.page, this.state.sort);
+  const handleNext = () => {
+    onNext(users.page, state.sort);
   };
 
-  handlePrev = () => {
-    this.props.onPrev(this.props.users.page, this.state.sort);
+  const handlePrev = () => {
+    onPrev(users.page, state.sort);
   };
 
-  handleGoTo = (ix) => {
-    this.props.onGoTo(ix, this.props.users.page, this.state.sort);
+  const handleGoTo = (ix) => {
+    onGoTo(ix, users.page, state.sort);
   };
 
-  handleSort = (prop, dir) => {
+  const handleSort = (prop, dir) => {
     let sort = `${prop},${dir}`;
-    this.setState({sort});
-    this.props.onSort(sort);
+    let newState = {...state, sort};
+    setState(newState);
+    onSort(sort);
   };
 
-  componentDidMount = () => {
-    this.props.onLoad();
-  };
-
-  render() {
-    let items = this.props.users.list.map(
-        (user) => <UserItem user={user} key={getLinkHref('self', user.links)}/>);
-    return (
-        <React.Fragment>
-          <div className="my-3 p-3 rounded box-shadow">
-            <div className="row border-bottom border-gray pb-2 mb-0">
-              <div className="col-12">
-                <h4 className="float-left">The PeepZ</h4>
-                <Button className="float-right" color="info"
-                        onClick={this.props.onUserCreate}>Create user</Button>
-              </div>
+  let items = users.list.map(
+      (user) => <UserItem user={user} key={getLinkHref('self', user.links)}/>);
+  return (
+      <React.Fragment>
+        <div className="my-3 p-3 rounded box-shadow">
+          <div className="row border-bottom border-gray pb-2 mb-0">
+            <div className="col-12">
+              <h4 className="float-left">The PeepZ</h4>
+              <Button className="float-right" color="info"
+                      onClick={onUserCreate}>Create user</Button>
             </div>
-
-            {items}
           </div>
-          <div className="my-3 p-3 float-right">
-            <Paginate payload={this.props.users} onNext={this.handleNext}
-                      onPrevious={this.handlePrev}
-                      onGoTo={this.handleGoTo}/>
-          </div>
-          <UserEditModalContainer/>
-        </React.Fragment>
-    );
-  }
-}
 
-const mapStateToProps = (state) => {
-  return {
-    users: state.users,
-  };
+          {items}
+        </div>
+        <div className="my-3 p-3 float-right">
+          <Paginate payload={users} onNext={handleNext}
+                    onPrevious={handlePrev}
+                    onGoTo={handleGoTo}/>
+        </div>
+      </React.Fragment>
+  );
 };
-
-const mapDispatchToProps = (dispatch) => ({
-  onPageResize: (size, sort) => {
-    dispatch(queryForUsersAction({page: 0, take: size, sort}));
-  },
-  onNext: (page, sort) => {
-    dispatch(
-        queryForUsersAction({page: page.number + 1, take: page.size, sort}));
-  },
-  onPrev: (page, sort) => {
-    let pageNumber = page.number - 1;
-    if (pageNumber > -1) {
-      dispatch(queryForUsersAction({page: pageNumber, take: page.size, sort}));
-    }
-  },
-  onGoTo: (ix, page, sort) => {
-    dispatch(queryForUsersAction({page: ix, take: page.size, sort}));
-  },
-  onSort: (page, sort) => {
-    dispatch(queryForUsersAction({page: page.number, take: page.size, sort}));
-  },
-  onUserCreate: () => {
-    dispatch(userCreating());
-  },
-  onLoad: () => {
-    dispatch(queryForUsersAction({page: 0, take: 20, sort: 'username,asc'}));
-  },
-});
-
-const UserListContainer = connect(mapStateToProps, mapDispatchToProps)(UserList);
-
-export default UserListContainer;
