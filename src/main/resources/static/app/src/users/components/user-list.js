@@ -10,7 +10,6 @@ import { Button } from 'reactstrap';
 export const UserList = (props) => {
   const {
     users,
-    onLoad,
     onSort,
     onPageResize,
     onNext,
@@ -25,8 +24,6 @@ export const UserList = (props) => {
     size: 20,
     openEditModal: false,
   });
-
-  useEffect(onLoad);
 
   const handlePageSizeChange = (size) => {
     onPageResize(size, state.sort);

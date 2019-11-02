@@ -1,7 +1,7 @@
-import { connect } from 'react-redux';
+import React, { useEffect, useLayoutEffect } from 'react';
+import { connect, useDispatch } from 'react-redux';
 import { UserList } from './user-list';
 import { queryForUsersAction, userCreating } from '../index';
-
 
 const mapStateToProps = (state) => {
   return {
@@ -32,9 +32,15 @@ const mapDispatchToProps = (dispatch) => ({
   onUserCreate: () => {
     dispatch(userCreating());
   },
-  onLoad: () => {
-    dispatch(queryForUsersAction({page: 0, take: 20, sort: 'username,asc'}));
-  },
+  // onLoad: () => {
+  //   dispatch(queryForUsersAction({page: 0, take: 20, sort: 'username,asc'}));
+  // },
 });
 
-export const UserListContainer = connect(mapStateToProps, mapDispatchToProps)(UserList);
+const _UserListContainer = connect(mapStateToProps, mapDispatchToProps)(UserList);
+
+export const UserListContainer = () => {
+  const dispatch = useDispatch();
+  useEffect(() => dispatch(queryForUsersAction({page: 0, take: 20, sort: 'username,asc'})), []);
+  return <_UserListContainer/>
+};

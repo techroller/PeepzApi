@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import has from 'lodash/has';
 import moment from 'moment';
 import {
@@ -21,11 +21,12 @@ export const UserEditModal = (props) => {
     onClose,
   } = props;
 
-  let user = {
-    ...props.user
-  };
-
   const [isDirty, setDirty] = useState(false);
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    setUser(props.user);
+  }, [props.user]);
 
   const handleClose = () => {
     setDirty(false);
@@ -34,19 +35,23 @@ export const UserEditModal = (props) => {
 
   const handleChange = (e) => {
     const {name, value} = e.target;
-    user[name] = value;
+
+    const newUser = {...user};
+    newUser[name] = value;
+    setUser(newUser);
     setDirty(true);
   };
 
   const setDateOfBirth = (date) => {
-    user.dateOfBirth = date;
+    const newUser = {...user};
+    newUser.dateOfBirth = date;
+    setUser(newUser);
     setDirty(true);
   };
 
   const handleSubmit = () => {
     const newUser = {...user};
-    newUser.dateOfBirth = moment(user.dateOfBirth).
-        format('YYYY-MM-DD[T]HH:mm:ss[Z]');
+    newUser.dateOfBirth = moment(user.dateOfBirth).format('YYYY-MM-DD[T]HH:mm:ss[Z]');
     onUserUpdated(newUser);
     handleClose();
   };
@@ -79,8 +84,7 @@ export const UserEditModal = (props) => {
               <div>
                 <DatePicker id="user-modal-dateOfBirth" name="dateOfBirth"
                             className="form-control"
-                            value={moment(user.dateOfBirth).
-                                format('MM/DD/YYYY')}
+                            selected={user.dateOfBirth}
                             onSelect={setDateOfBirth}
                             openToDate={moment(user.dateOfBirth).toDate()}/>
               </div>
