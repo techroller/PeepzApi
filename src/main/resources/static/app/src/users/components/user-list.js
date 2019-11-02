@@ -1,19 +1,16 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect, useSelector, useDispatch } from 'react-redux';
 import UserItem from './user-item';
 import UserEditModalContainer from './user-edit-modal';
 import {
   queryForUsersAction,
-  deleteUserAction,
-  userLoaded,
-  userCreating,
-  userEditing
+  userCreating
 } from '../index';
 import {
-  getLinkHref
+  getLinkHref,
 } from '../../model';
 import Paginate from '../../ui/paginate';
-import {Button} from 'reactstrap';
+import { Button } from 'reactstrap';
 
 class UserList extends Component {
   constructor(props) {
@@ -22,7 +19,7 @@ class UserList extends Component {
       search: '',
       sort: 'username,asc',
       size: 20,
-      openEditModal: false
+      openEditModal: false,
     };
   }
 
@@ -53,35 +50,35 @@ class UserList extends Component {
   };
 
   render() {
-    let items = this.props.users.list.map((user) => <UserItem user={user} key={getLinkHref('self', user.links)}
-                                                              onEditUser={this.props.onUserEdit}
-                                                              onDeleteUser={this.props.onUserDelete}
-                                                              onUserSelected={this.props.onUserSelected}/>);
+    let items = this.props.users.list.map(
+        (user) => <UserItem user={user} key={getLinkHref('self', user.links)}/>);
     return (
-      <React.Fragment>
-        <div className="my-3 p-3 rounded box-shadow">
-          <div className="row border-bottom border-gray pb-2 mb-0">
-            <div className="col-12">
-              <h4 className="float-left">The PeepZ</h4>
-              <Button className="float-right" color="info" onClick={this.props.onUserCreate}>Create user</Button>
+        <React.Fragment>
+          <div className="my-3 p-3 rounded box-shadow">
+            <div className="row border-bottom border-gray pb-2 mb-0">
+              <div className="col-12">
+                <h4 className="float-left">The PeepZ</h4>
+                <Button className="float-right" color="info"
+                        onClick={this.props.onUserCreate}>Create user</Button>
+              </div>
             </div>
-          </div>
 
-          {items}
-        </div>
-        <div className="my-3 p-3 float-right">
-          <Paginate payload={this.props.users} onNext={this.handleNext} onPrevious={this.handlePrev}
-                    onGoTo={this.handleGoTo}/>
-        </div>
-        <UserEditModalContainer/>
-      </React.Fragment>
+            {items}
+          </div>
+          <div className="my-3 p-3 float-right">
+            <Paginate payload={this.props.users} onNext={this.handleNext}
+                      onPrevious={this.handlePrev}
+                      onGoTo={this.handleGoTo}/>
+          </div>
+          <UserEditModalContainer/>
+        </React.Fragment>
     );
   }
 }
 
 const mapStateToProps = (state) => {
   return {
-    users: state.users
+    users: state.users,
   };
 };
 
@@ -90,12 +87,13 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(queryForUsersAction({page: 0, take: size, sort}));
   },
   onNext: (page, sort) => {
-    dispatch(queryForUsersAction({page: page.number + 1, take: page.size, sort}));
+    dispatch(
+        queryForUsersAction({page: page.number + 1, take: page.size, sort}));
   },
   onPrev: (page, sort) => {
     let pageNumber = page.number - 1;
     if (pageNumber > -1) {
-      dispatch(queryForUsersAction({page: pageNumber, take: page.size, sort}))
+      dispatch(queryForUsersAction({page: pageNumber, take: page.size, sort}));
     }
   },
   onGoTo: (ix, page, sort) => {
@@ -104,21 +102,12 @@ const mapDispatchToProps = (dispatch) => ({
   onSort: (page, sort) => {
     dispatch(queryForUsersAction({page: page.number, take: page.size, sort}));
   },
-  onUserSelected: (user) => {
-    dispatch(userLoaded(user));
-  },
   onUserCreate: () => {
     dispatch(userCreating());
   },
-  onUserEdit: (user) => {
-    dispatch(userEditing(user, true));
-  },
-  onUserDelete: (user) => {
-    dispatch(deleteUserAction(user));
-  },
   onLoad: () => {
     dispatch(queryForUsersAction({page: 0, take: 20, sort: 'username,asc'}));
-  }
+  },
 });
 
 const UserListContainer = connect(mapStateToProps, mapDispatchToProps)(UserList);
