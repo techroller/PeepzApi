@@ -1,32 +1,26 @@
-import React, {Component} from 'react';
+import React, {useState, Component} from 'react';
 import {Collapse, Nav, Navbar, NavbarBrand, NavbarToggler} from 'reactstrap';
 
-
-export class AppNav extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      navOpen: false
+export const AppNav = () => {
+  const [state, setState] = useState({
+    navOpen: false
+  });
+  const toggleNavbar = () => {
+    const newState = {
+      ...state,
+      navOpen: !state.navOpen
     };
-  }
-
-  toggleNavbar = () => {
-    this.setState((state) => {
-      return {
-        navOpen: !state.navOpen
-      };
-    });
-  }
-
-  render = () => (
-    <Navbar color="light" light expand="md">
-      <NavbarBrand href="/">PeepZ</NavbarBrand>
-      <NavbarToggler onClick={this.toggleNavbar}/>
-      <Collapse isOpen={this.state.isOpen}>
-        <Nav className="ml-auto" navbar/>
-      </Collapse>
-    </Navbar>
+    setState(newState);
+  };
+  return (
+      <Navbar color="light" light expand="md">
+        <NavbarBrand href="/">PeepZ</NavbarBrand>
+        <NavbarToggler onClick={toggleNavbar}/>
+        <Collapse isOpen={state.navOpen}>
+          <Nav className="ml-auto" navbar/>
+        </Collapse>
+      </Navbar>
   )
-}
+};
 
 export default AppNav;
