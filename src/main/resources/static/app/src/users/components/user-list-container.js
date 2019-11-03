@@ -5,7 +5,7 @@ import { queryForUsersAction, userCreating } from '../index';
 
 const mapStateToProps = (state) => {
   return {
-    users: state.users
+    users: state.users,
   };
 };
 
@@ -32,9 +32,6 @@ const mapDispatchToProps = (dispatch) => ({
   onUserCreate: () => {
     dispatch(userCreating());
   },
-  // onLoad: () => {
-  //   dispatch(queryForUsersAction({page: 0, take: 20, sort: 'username,asc'}));
-  // },
 });
 
 const _UserListContainer = connect(mapStateToProps, mapDispatchToProps)(UserList);
@@ -42,5 +39,5 @@ const _UserListContainer = connect(mapStateToProps, mapDispatchToProps)(UserList
 export const UserListContainer = () => {
   const dispatch = useDispatch();
   useEffect(() => dispatch(queryForUsersAction({page: 0, take: 20, sort: 'username,asc'})), []);
-  return <_UserListContainer/>
+  return <_UserListContainer/>;
 };

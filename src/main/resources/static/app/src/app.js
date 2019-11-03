@@ -4,8 +4,6 @@ import ReduxToastr from 'react-redux-toastr';
 import { AppNav } from './ui/layout/AppNav';
 import { UserListContainer, UserEditModalContainer } from './users/components';
 
-// App container components
-
 export const App = (props) => {
   return (
       <div className="container">
