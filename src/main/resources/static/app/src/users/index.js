@@ -1,9 +1,9 @@
-import {createReducer} from '../core';
-import handlers, {UserAction} from './handlers'
-import {ofType, combineEpics} from 'redux-observable';
-import {mergeMap, map, catchError} from 'rxjs/operators';
-import {of} from 'rxjs';
-import {toastr} from 'react-redux-toastr';
+import { createReducer } from '../core';
+import { userReducer, UserAction } from './handlers'
+import { ofType, combineEpics } from 'redux-observable';
+import { mergeMap, map, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { toastr } from 'react-redux-toastr';
 
 import client from '../client';
 
@@ -15,7 +15,7 @@ const NOOP_ACTION = {
   type: UserAction.NOOP
 };
 
-export default createReducer({list: [], current: {}, editing: false}, handlers);
+export default userReducer({ list: [], current: {}, editing: false });
 
 /**
  * Receives a query object from a dispatch.
@@ -102,7 +102,7 @@ export const userCreatedAction = (createdUser) => {
 
 export const updateUserAction = (payload) => ({
   type: UserAction.USER_UPDATE,
-  payload: {...payload}
+  payload: { ...payload }
 });
 
 export const userUpdatedAction = (updatedUser) => ({
@@ -114,7 +114,7 @@ export const userUpdatedAction = (updatedUser) => ({
 
 export const deleteUserAction = (payload) => ({
   type: UserAction.USER_DELETE,
-  payload: {...payload}
+  payload: { ...payload }
 });
 
 export const userDeletedAction = (link) => ({
@@ -158,7 +158,7 @@ export const queryForUsersEpic = (action$) => action$.pipe(
   ofType(UserAction.QUERY_FOR_USERS),
   mergeMap(action => {
     let path = 'users';
-    let payload = {...action.payload};
+    let payload = { ...action.payload };
     if (payload.href) {
       // this is a link, just use it.
       path = payload.href;
@@ -167,7 +167,7 @@ export const queryForUsersEpic = (action$) => action$.pipe(
     return client.get(path, payload.query).pipe(
       // Notice we don't use mergeMap here because we don't need to chain observables. We only need to dispatch
       // the usersLoaded action.
-      map(({data}) => usersLoaded(data)),
+      map(({ data }) => usersLoaded(data)),
       catchError(error => of(toastRequestError(error.response)))
     );
   })
@@ -177,7 +177,7 @@ export const createUserEpic = (action$) => action$.pipe(
   ofType(UserAction.USER_CREATE),
   mergeMap(action => {
     return client.post('users', action.payload).pipe(
-      mergeMap(({data}) => of(userCreatedAction(data), toastSaveResource(data))),
+      mergeMap(({ data }) => of(userCreatedAction(data), toastSaveResource(data))),
       catchError(error => {
         return of(toastSaveResourceError(error.response, action.payload));
       })
@@ -190,7 +190,7 @@ export const updateUserEpic = (action$) => action$.pipe(
   mergeMap(action => {
     let link = getLink('self', action.payload.links);
     return client.put(link.href, action.payload).pipe(
-      mergeMap(({data}) => of(userUpdatedAction(data), toastSaveResource(data)))
+      mergeMap(({ data }) => of(userUpdatedAction(data), toastSaveResource(data)))
     );
   }),
   catchError(error => {
