@@ -1,5 +1,5 @@
 import { createReducer } from '../core';
-import { userReducer, UserAction } from './handlers'
+import { userReducer, UserAction } from './reducer'
 import { ofType, combineEpics } from 'redux-observable';
 import { mergeMap, map, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';

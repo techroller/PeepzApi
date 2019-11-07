@@ -1,5 +1,6 @@
 import {resourceMatches, extractId, getLink, linkMatches} from "../model";
 import filter from 'lodash/filter';
+import { createReducer } from "../core";
 
 export const UserAction = {
     USER_CREATE: 'USER_CREATE',
@@ -121,7 +122,7 @@ const userDeleted = (state, action) => {
     return newState;
 };
 
-export default {
+const handlers = {
     [UserAction.USER_CREATED]: userCreated,
     [UserAction.USER_CREATING]: userCreating,
     [UserAction.USER_UPDATED]: userUpdated,
@@ -131,3 +132,4 @@ export default {
     [UserAction.USER_DELETED]: userDeleted
 };
 
+export const userReducer = (initialState = {}) => createReducer(initialState, handlers);
